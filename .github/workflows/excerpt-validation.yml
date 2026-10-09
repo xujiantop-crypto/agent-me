@@ -1,0 +1,26 @@
+name: Excerpt regression validation
+on:
+  push:
+    branches: [test/excerpt-validation]
+permissions:
+  contents: read
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: '0.12.7'
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: make setup
+      - run: make lint
+      - run: make test
+      - run: make knowledge-check
+      - run: make docs
+      - run: make evaluate
+      - run: .venv/bin/python scripts/evaluate_collaboration.py --workflow verified
+      - run: make build
